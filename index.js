@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require('express')
 const app = express()
   
@@ -272,7 +274,32 @@ async function updateHotelCheckout(hotelID, dataToUpdate){
 
 //updateHotelCheckout("66d9799b1c827155cd8ff14a", {checkOutTime: "11 AM"})
 
-
+app.patch("/hotels/:hotelId", async (req, res) => {
+    try {
+      const updatedHotel = await Hotel.findByIdAndUpdate(
+        req.params.hotelId,
+        req.body,
+        { new: true }
+      );
+  
+      if (updatedHotel) {
+        res.status(200).json({
+          message: "Hotel updated successfully",
+          hotel: updatedHotel
+        });
+      } else {
+        res.status(404).json({
+          error: "Hotel not found"
+        });
+      }
+    } catch (error) {
+      console.log("Error while updating hotel", error);
+  
+      res.status(500).json({
+        error: "Failed to update hotel"
+      });
+    }
+  });
 
  //update name to resort
 async function updateHotelRating(hotelID, dataToUpdate){
