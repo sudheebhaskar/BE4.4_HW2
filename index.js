@@ -102,6 +102,36 @@ app.get("/hotels/category/:hotelCategory", async (req, res) => {
 // });
 
 
+// app.get("/hotels/:hotelName", async (req, res) => {
+//   try {
+//     const hotelName = req.params.hotelName;
+
+//     console.log("Searching hotel:", hotelName);
+
+//     const hotel = await Hotel.findOne({
+//       name: hotelName
+//     });
+
+//     console.log("Hotel found:", hotel);
+
+//     if (hotel) {
+//       res.status(200).json(hotel);
+//     } else {
+//       res.status(404).json({
+//         error: "No Hotel found"
+//       });
+//     }
+
+//   } catch (error) {
+//     console.log("Error while fetching hotel by name:", error);
+
+//     res.status(500).json({
+//       error: "Failed to fetch hotel.",
+//       details: error.message
+//     });
+//   }
+// });
+
 app.get("/hotels/:hotelName", async (req, res) => {
   try {
     const hotelName = req.params.hotelName;
