@@ -8,129 +8,126 @@ const app = express();
 const { initializeDatabase } = require("./db/db.connect");
 const Hotel = require("./models/hotels.models");
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Initialize database
 initializeDatabase();
 
 
-// GET all hotels
+// =====================================================
+// 1. CREATE A NEW HOTEL
+// =====================================================
+
+app.post("/hotels", async (req, res) => {
+  try {
+    const hotel = new Hotel(req.body);
+
+    const savedHotel = await hotel.save();
+
+    res.status(201).json({
+      message: "Hotel added successfully",
+      hotel: savedHotel,
+    });
+  } catch (error) {
+    console.log("Error while creating hotel:", error);
+
+    res.status(500).json({
+      error: "Failed to add hotel",
+      message: error.message,
+    });
+  }
+});
+
+
+// =====================================================
+// 2. GET ALL HOTELS
+// =====================================================
+
 app.get("/hotels", async (req, res) => {
   try {
     const hotels = await Hotel.find();
 
     if (hotels.length !== 0) {
-      res.json(hotels);
+      res.status(200).json(hotels);
     } else {
       res.status(404).json({
-        error: "No Hotel found"
+        error: "No Hotel found",
       });
     }
   } catch (error) {
+    console.log("Error while fetching hotels:", error);
+
     res.status(500).json({
-      error: "Failed to fetch hotels."
+      error: "Failed to fetch hotels",
+      message: error.message,
     });
   }
 });
 
 
-// GET hotel by rating
+// =====================================================
+// 3. GET HOTELS BY RATING
+// =====================================================
+
 app.get("/hotels/rating/:hotelRating", async (req, res) => {
   try {
     const hotelRating = parseFloat(req.params.hotelRating);
 
     const hotels = await Hotel.find({
-      rating: hotelRating
+      rating: hotelRating,
     });
 
     if (hotels.length !== 0) {
-      res.json(hotels);
+      res.status(200).json(hotels);
     } else {
       res.status(404).json({
-        error: "No Hotel found with this rating"
+        error: "No Hotel found with this rating",
       });
     }
   } catch (error) {
+    console.log("Error while fetching hotels by rating:", error);
+
     res.status(500).json({
-      error: "Failed to fetch hotels."
+      error: "Failed to fetch hotels",
+      message: error.message,
     });
   }
 });
 
 
-// GET hotel by category
+// =====================================================
+// 4. GET HOTELS BY CATEGORY
+// =====================================================
+
 app.get("/hotels/category/:hotelCategory", async (req, res) => {
   try {
     const hotels = await Hotel.find({
-      category: req.params.hotelCategory
+      category: req.params.hotelCategory,
     });
 
     if (hotels.length !== 0) {
-      res.json(hotels);
+      res.status(200).json(hotels);
     } else {
       res.status(404).json({
-        error: "No Hotel found in this category"
+        error: "No Hotel found in this category",
       });
     }
   } catch (error) {
+    console.log("Error while fetching hotels by category:", error);
+
     res.status(500).json({
-      error: "Failed to fetch hotels."
+      error: "Failed to fetch hotels",
+      message: error.message,
     });
   }
 });
 
 
-// // GET hotel by name
-// app.get("/hotels/:hotelName", async (req, res) => {
-//   try {
-//     const hotel = await Hotel.findOne({
-//       name: req.params.hotelName
-//     });
-
-//     if (hotel) {
-//       res.json(hotel);
-//     } else {
-//       res.status(404).json({
-//         error: "No Hotel found"
-//       });
-//     }
-//   } catch (error) {
-//     res.status(500).json({
-//       error: "Failed to fetch hotel."
-//     });
-//   }
-// });
-
-
-// app.get("/hotels/:hotelName", async (req, res) => {
-//   try {
-//     const hotelName = req.params.hotelName;
-
-//     console.log("Searching hotel:", hotelName);
-
-//     const hotel = await Hotel.findOne({
-//       name: hotelName
-//     });
-
-//     console.log("Hotel found:", hotel);
-
-//     if (hotel) {
-//       res.status(200).json(hotel);
-//     } else {
-//       res.status(404).json({
-//         error: "No Hotel found"
-//       });
-//     }
-
-//   } catch (error) {
-//     console.log("Error while fetching hotel by name:", error);
-
-//     res.status(500).json({
-//       error: "Failed to fetch hotel.",
-//       details: error.message
-//     });
-//   }
-// });
+// =====================================================
+// 5. GET HOTEL BY NAME
+// =====================================================
 
 app.get("/hotels/:hotelName", async (req, res) => {
   try {
@@ -139,7 +136,7 @@ app.get("/hotels/:hotelName", async (req, res) => {
     console.log("Searching hotel:", hotelName);
 
     const hotel = await Hotel.findOne({
-      name: hotelName
+      name: hotelName,
     });
 
     console.log("Hotel found:", hotel);
@@ -148,22 +145,22 @@ app.get("/hotels/:hotelName", async (req, res) => {
       res.status(200).json(hotel);
     } else {
       res.status(404).json({
-        error: "No Hotel found"
+        error: "No Hotel found",
       });
     }
-
   } catch (error) {
     console.log("Error while fetching hotel by name:", error);
 
     res.status(500).json({
-      error: "Failed to fetch hotel.",
-      details: error.message
+      error: "Failed to fetch hotel",
+      message: error.message,
     });
   }
 });
 
-const PORT = 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// =====================================================
+// VERCEL EXPORT
+// =====================================================
+
+module.exports = app;
