@@ -8,7 +8,10 @@ const app = express();
 const { initializeDatabase } = require("./db/db.connect");
 const Hotel = require("./models/hotels.models");
 
-// Middleware
+// =====================================================
+// MIDDLEWARE
+// =====================================================
+
 app.use(cors());
 app.use(express.json());
 
@@ -153,6 +156,39 @@ app.get("/hotels/:hotelName", async (req, res) => {
 
     res.status(500).json({
       error: "Failed to fetch hotel",
+      message: error.message,
+    });
+  }
+});
+
+
+// =====================================================
+// 6. DELETE HOTEL
+// =====================================================
+
+app.delete("/hotels/:hotelId", async (req, res) => {
+  try {
+    const hotelId = req.params.hotelId;
+
+    console.log("Deleting hotel:", hotelId);
+
+    const deletedHotel = await Hotel.findByIdAndDelete(hotelId);
+
+    if (deletedHotel) {
+      res.status(200).json({
+        message: "Hotel deleted successfully",
+        hotel: deletedHotel,
+      });
+    } else {
+      res.status(404).json({
+        error: "Hotel not found",
+      });
+    }
+  } catch (error) {
+    console.log("Error while deleting hotel:", error);
+
+    res.status(500).json({
+      error: "Failed to delete hotel",
       message: error.message,
     });
   }
